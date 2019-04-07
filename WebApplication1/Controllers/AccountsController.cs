@@ -14,7 +14,7 @@ namespace WebApplication1.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
-    public class EmployeesController : ControllerBase
+    public class AccountsController : ControllerBase
     {
         [Route("Add")]
         [HttpPost]
