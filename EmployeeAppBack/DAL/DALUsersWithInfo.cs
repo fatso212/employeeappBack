@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeAppBack.DAL
 {
-    public class Accounts
+    public class DALUsersWithInfo
     {
     }
 }

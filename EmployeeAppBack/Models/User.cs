@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeAppBack.Models
 {
-    public class Users
+    public class User
     {
         public int UserID { get; set; }
         public int AccountID { get; set; }

@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 
 namespace EmployeeAppBack.Models
 {
-    public class Assets
+    public class Asset
     {
+        public string AssetDescription { get; set; }
+        public string AssetName { get; set; }
+        public int AssetID { get; set; }
+        public string AssetType { get; set; }
     }
 }

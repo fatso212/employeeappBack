@@ -13,6 +13,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace EmployeeAppBack
+
+    //TODO implement and test sessions and login
+    //TODO implement hashing and salting passwords
+    //TODO research security measures
+
+    //TODO hierarchy within a company
+    //TODO hierarchyin trainings, which trainings are part of other trainings
 {
     public class Startup
     {
@@ -37,8 +44,7 @@ namespace EmployeeAppBack
 
             //uncomment after Data service is setup and named
 
-            //services.AddTransient<UserDAO>(j => new UserDAO(@"Data Source=localhost;Initial Catalog=techdin;Integrated Security=True"));
-            //services.AddTransient<InvitationDAO>(j => new InvitationDAO(@"Data Source=localhost;Initial Catalog=techdin;Integrated Security=True"));
+            services.AddTransient<DAL.DALAccounts>(j => new DAL.DALAccounts(@"Data Source=localhost;Initial Catalog=Employee_Management;Integrated Security=True"));
 
             // Add CORS policy
             services.AddCors(options => {

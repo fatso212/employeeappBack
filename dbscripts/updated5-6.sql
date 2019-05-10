@@ -26,8 +26,10 @@ CREATE TABLE Accounts
 
 	CONSTRAINT pk_AccountID primary key(AccountID)
 )
---CREATE TABLE UserTypes()
---CREATE TABLE AssetTypes()
+
+INSERT INTO Accounts(AccountName, AccountDescription, AccountLogo) VALUES
+	('Amazon', 'Retail Online Marketplace', 'FileName/AmazonLogo'),
+	('Apple', 'Electronics Manufacturer', 'FileName/AppleLogo')
 
 CREATE TABLE Users
 (
@@ -44,10 +46,15 @@ CREATE TABLE Users
 	
 	-- fk accounts/join table for accounts and users because you want master user to be able to access all the accounts
 	CONSTRAINT CHK_User CHECK (UserType = 'Employee' OR UserType = 'User' OR UserType = 'Admin'),
-	CONSTRAINT CHK_UserName CHECK(UserName NOT NULL WHERE UserType = User )
-	CONSTRAINT CHK_Salt CHECK(Salt NOT NULL WHERE UserType = User )
+	CONSTRAINT CHK_UserName CHECK(UserName IS NOT NULL OR UserType != 'User'),
+	CONSTRAINT CHK_Salt CHECK(UserType != 'User' OR Salt IS NOT NULL ),
 	CONSTRAINT pk_UserID primary key(UserID)
 )
+INSERT INTO Users(AccountID, UserType, UserName, PasswordString, Salt, UserEmailAddress, UserFirstName, UserLastName, UserPhoneNumber) VALUES
+	(1, 'User', 'Fatso', 'password', 'salt', 'michaeljones@amazon.com', 'Michael', 'jones', '7712221111'),
+	(1, 'User', 'fatso2', 'password', 'salt', 'brianjones@amazon.com', 'brian', 'jones', '7712221112'),
+	(2, 'User', 'skinnyso', 'password', 'salt', 'mikebrand@apple.com', 'mike', 'brand', '7712221133'),
+	(2, 'User', 'skinnyso2', 'password', 'salt', 'nancyhanson@apple.com', 'nancy', 'hanson', '7712221141')
 
 CREATE TABLE Trainings
 (
@@ -59,6 +66,13 @@ CREATE TABLE Trainings
 	CONSTRAINT pk_trainingID primary key(trainingID)
 )
 
+INSERT INTO Trainings(AccountID, TrainingName, TrainingDescription) Values 
+	(1, 'Software Engineer', 'Training to become a software developer'),
+	(1, 'plumber', 'Training in plumbing'),
+	(1, 'Secretary', 'Training in Secratarial Work')
+
+
+
 -- Joined table user trainings
 
 CREATE TABLE UserTrainings
@@ -68,20 +82,27 @@ CREATE TABLE UserTrainings
 	TrainingID int not null, --FK
 	TrainingStatus varchar(20),
 
-	CONSTRAINT CHK_TrainingStatus CHECK (TrainingStatus = 'Recommended' OR TrainingStatus = 'Requested' OR TrainingStatus = 'In Progress'OR TrainingStatus = 'Completed')
+	CONSTRAINT CHK_TrainingStatus CHECK (TrainingStatus = 'Recommended' OR TrainingStatus = 'Requested' OR TrainingStatus = 'In Progress' OR TrainingStatus = 'Completed'),
 	CONSTRAINT PK_UserTrainingID primary key(UserTrainingID)
 )
+INSERT INTO UserTrainings(UserID, TrainingID, TrainingStatus) Values
+	(1, 1, 'Recommended'),
+	(2, 1, 'Recommended'),
+	(1, 3, 'Completed')
 
 CREATE TABLE Assets
 (
 	AssetDescription varchar(200),
 	AssetName varchar(50),
 	AssetID INT identity(1,1),
-	AssetType varchar(20) CHECK (AssetType='Skill') OR (AssetType='Talent') OR (AssetType='Position'),
+	AssetType varchar(20) CHECK (AssetType='Skill' OR AssetType='Talent' OR AssetType='Position'),
 
 	CONSTRAINT PK_AssetID primary key(AssetID)
 )
 --  users/assets joined table
+INSERT INTO Assets (AssetDescription, AssetName, AssetType) Values
+	('Knows Basic Art Skills', 'Art', 'Skill'),
+	('Experience With Secratarial Work', 'Secretary', 'Position')
 
 CREATE TABLE AssetsUsers
 (
@@ -95,10 +116,13 @@ CREATE TABLE AssetsUsers
 	CONSTRAINT PK_AssetsUserID primary key(AssetsUserID)
 )
 
+INSERT INTO AssetsUsers (AssetID, UserID, UsersAssetsExperienceStart, UsersAssetsExperienceEnd, UsersAssetsNotes) VALUES
+	(1)
+
 CREATE TABLE TrainingFiles
 (
-	TrainingFileID AssetID INT identity(1,1),
-	TrainingID INT not null --FK
+	TrainingFileID INT identity(1,1),
+	TrainingID INT not null, --FK
 	TrainingFileOrderNo INT not null,
 	TrainingFileDescription VARCHAR(200) NOT NULL,
 	TrainingFilePath varchar(100) NOT NULL,
@@ -113,47 +137,26 @@ ALTER TABLE AssetsUsers ADD FOREIGN KEY (UserID) REFERENCES Users (UserID);
 ALTER TABLE TrainingFiles ADD FOREIGN KEY (TrainingID) REFERENCES Trainings (TrainingID);
 
 
-INSERT INTO accounts (accountName) Values
-	('Amazon'),
-	('Apple'),
-	('Microsoft')
-
-INSERT INTO employees(accountID, employeeFirstName, employeeLastName) VALUES
-	(1, 'sam', 'flirk'),
-	(1, 'sam', 'lirk'),
-	(1, 'bob', 'kirk')
-
-INSERT INTO trainings(accountID, trainingName) VALUES
-	(2, 'accounting fundamentals'),
-	(2, 'secretarial responsibilities')
-
-INSERT INTO talents (talentName, employeeID) VALUES
-	('art', 1),
-	('design', 1),
-	('music', 1),
-	('visual', 1)
-
-INSERT INTO skills (skillName, employeeID) VALUES
-	('web design', 1),
-	('technical', 1),
-	('electronic engineering', 1),
-	('graphic design', 1)
-
-INSERT INTO positions(positionName, employeeID) VALUES
-	('Secretary', 1),
-	('Graphic Designer', 1),
-	('Retail', 1),
-	('Store Manager', 1)
-
 
 
 
 SELECT * FROM users
 SELECT * FROM accounts
-SELECT * FROM employees join accounts on employees.accountID = accounts.accountID
-SELECT * FROM trainings join accounts on trainings.accountID = accounts.accountID
-SELECT * FROM talents join employees on talents.employeeID = employees.employeeID
-SELECT * FROM skills join employees on skills.employeeID = employees.employeeID
-SELECT * FROM positions join employees on positions.employeeID = employees.employeeID
+SELECT * FROM Trainings
+SELECT * FROM UserTrainings
+select * FROM Assets
+
+SELECT * FROM Users JOIN Accounts
+ON Users.AccountID = Accounts.AccountID
+
+SELECT * FROM Trainings JOIN Accounts
+ON Trainings.AccountID = Accounts.AccountID
+
+SELECT * FROM UserTrainings join Trainings
+ON UserTrainings.TrainingID = Trainings.TrainingID
+JOIN  Users ON UserTrainings.UserID = Users.UserID
+Join Accounts ON Users.AccountID = accounts.AccountID
+
+
 
 COMMIT TRANSACTION
